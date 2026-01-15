@@ -1177,7 +1177,7 @@ int UserInterpreter::cleanup_readout(const char *doneMessage)
     //send response to user
     dprintf(client_sock_, "%s\n", boardMessage.c_str());
 
-    //wait some time in order to wait the soft to take all data from the socket, we need to do this better
+    //brief delay before stopping readout thread (historical - may not be necessary)
     usleep(LTASOFT_DELAY_BEFORE_USER_CANCELLING_READOUT);
 
     return dump_->stop_readout_thread();

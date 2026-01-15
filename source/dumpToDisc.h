@@ -7,7 +7,7 @@
 #include <csignal>
 
 #define LTA_BIN_FILE_SUFFIX ".dat"
-#define LTASOFT_DELAY_BEFORE_USER_CANCELLING_READOUT 1000000 //in us
+#define LTASOFT_DELAY_BEFORE_USER_CANCELLING_READOUT 20000 //in us - time for readout thread to exit cleanly
 #define LTA_SOFT_MAXIMUM_BINARY_FILE_SIZE 50000000 //maximum size of files in bytes
 
 typedef struct
