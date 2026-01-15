@@ -205,12 +205,17 @@ void *saveData(void * args)
             packCount ++;
             bytesReadThisFile += numRecBytes;
             sampsRead += quadWordsCount;
+
+            // Check immediately if we've received expected samples (for fixed readouts)
+            if (sampsExpected > 0 && sampsRead >= sampsExpected) {
+                LOG_F(INFO, "received expected number of samples (%ld), readout complete", sampsExpected);
+                *readoutStatus = 3;
+            }
         } else if (numRecBytes == -1) {
             if (errno==EAGAIN || errno==EWOULDBLOCK) {//UDP timeout
                 switch (*readoutStatus) {
                     case 0: //shouldn't get here
                     case 1:
-                    case 3:
                         break;
                     case 2:
                         //if we don't have the correct amount of data (either too much or too little), wait for the full duration of READOUT_TIMEOUT - we want to see if we get more data
@@ -219,6 +224,11 @@ void *saveData(void * args)
                             LOG_F(INFO, "no data in a while: readout done? we got %ld samples, expected %ld", sampsRead, sampsExpected);
                             *readoutStatus = 3;
                         }
+                        break;
+                    case 3:
+                        // Already complete, waiting for main thread to stop us
+                        // Sleep to avoid CPU spinning
+                        usleep(10000); // 10ms
                         break;
                 }
             } else {
